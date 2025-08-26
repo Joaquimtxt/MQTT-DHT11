@@ -10,6 +10,8 @@ const char* mqtt_server = "broker.hivemq.com";
 const int mqtt_port = 1883;
 const char* topicoSensor = "Jg/temperatura";
 
+#define LED_BUILTIN 2
+
 // --- Configuração do DHT11 ---
 #define DHTPIN 22
 #define DHTTYPE DHT11
@@ -23,6 +25,7 @@ WiFiClient espClient;//Objeto do cliente Wi-FI
 PubSubClient client(espClient); //Objeto do cliente MQTT utilizando o cliente wifi como parâmetro
 void setup_wifi() {
   delay(10);
+    digitalWrite(LED_BUILTIN, LOW);
   Serial.println("Conectando ao Wi-Fi...");
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
@@ -31,6 +34,7 @@ void setup_wifi() {
   }
   Serial.print("\n✅ Wi-Fi conectado. IP: ");
   Serial.println(WiFi.localIP());
+    digitalWrite(LED_BUILTIN, HIGH);
 }
 
 void callback(char* topic, byte* payload, unsigned int length) {
@@ -60,7 +64,8 @@ void reconnect(){
 
 void setup(){
   Serial.begin(115200);
-  dht.begin();//Inicializa o sensor DHT22
+  dht.begin();//Inicializa o sensor DHT22 
+  pinMode(LED_BUILTIN, OUTPUT);
   setup_wifi();
   client.setServer(mqtt_server, mqtt_port);
   client.setCallback(callback);
